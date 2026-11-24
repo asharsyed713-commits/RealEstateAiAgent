@@ -20,7 +20,7 @@ public class AiTestController {
     @GetMapping("/test")
     public String testConnection(@RequestParam String message) {
         String response = chatClient.prompt()
-                .system(AiConfig.REAL_ESTATE_SYSTEM_PROMPT)
+                .system(AiConfig.PROPERTY_DESCRIPTION_PROMPT)
                 .user(message)
                 .call()
                 .content();
