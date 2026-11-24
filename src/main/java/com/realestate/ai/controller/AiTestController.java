@@ -1,5 +1,6 @@
 package com.realestate.ai.controller;
 
+import com.realestate.ai.config.AiConfig;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,9 +20,7 @@ public class AiTestController {
     @GetMapping("/test")
     public String testConnection(@RequestParam String message) {
         String response = chatClient.prompt()
-                .system("You are a professional real estate AI assistant. " +
-                        "Help customers find suitable properties. " +
-                        "Always be polite and never invent property prices or availability.")
+                .system(AiConfig.REAL_ESTATE_SYSTEM_PROMPT)
                 .user(message)
                 .call()
                 .content();
