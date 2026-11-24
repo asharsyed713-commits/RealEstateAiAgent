@@ -40,10 +40,22 @@ public class AiTestController {
             @RequestParam String budget) {
 
         String templateText = """
-                Write an attractive real estate description 
-                for a {propertyType} located in {city}.
-                Its price is {budget}.
-                Use a professional and customer-friendly tone.
+                You are a professional real estate content writer.
+                
+                Your task is to write and attractive property description
+                using the following property details.
+                
+                Property Type: {propertyType}
+                Location: {city}
+                Price: {budget}
+                
+                Requirements:
+                        1. Use simple and professional English.
+                        2. Make the description attractive to potential buyers.
+                        3. Keep the description under 150 words.
+                        4. Do not invent amenities, facilities or property features.
+                        5. Use only the information provided above.
+                
                 """;
 
         PromptTemplate template = PromptTemplate.builder()
