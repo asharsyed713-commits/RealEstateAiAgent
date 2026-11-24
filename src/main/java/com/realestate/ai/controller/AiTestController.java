@@ -18,7 +18,10 @@ public class AiTestController {
     @GetMapping("/test")
     public String testConnection(){
         String response = chatClient.prompt()
-                .user("Introduce yourself as a real estate AI assistant in 3 sentences.")
+                .system("You are a professional real estate AI assistant. " +
+                        "Help customers find suitable properties. " +
+                        "Always be polite and never invent property prices or availability.")
+                .user("I am looking for a 2BHK apartment in Hyderabad answer in 50 words.")
                 .call()
                 .content();
 
