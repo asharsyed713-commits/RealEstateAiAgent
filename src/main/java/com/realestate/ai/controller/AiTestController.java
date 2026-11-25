@@ -5,10 +5,12 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.template.st.StTemplateRenderer;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
 
 import java.util.Map;
 
@@ -68,6 +70,15 @@ public class AiTestController {
 
         return chatClient.prompt(prompt)
                 .call()
+                .content();
+    }
+
+    @GetMapping(value = "/stream",produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public Flux<String> streamChat(@RequestParam String message) {
+        return chatClient.prompt()
+                .system(AiConfig.GENERAL_SYSTEM_PROMPT)
+                .user(message)
+                .stream()
                 .content();
     }
 }
