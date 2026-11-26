@@ -1,6 +1,7 @@
 package com.realestate.ai.controller;
 
 import com.realestate.ai.config.AiConfig;
+import com.realestate.ai.dto.PropertySearchRequest;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
@@ -81,4 +82,33 @@ public class AiTestController {
                 .stream()
                 .content();
     }
+
+    @GetMapping("/extract")
+    public PropertySearchRequest extractPropertyDetails(@RequestParam String message){
+        return chatClient.prompt()
+                .system("""
+                          You are a real estate search assistant.
+                        
+                                              Extract property search details from the user's request.
+                        
+                                              Fields to extract:
+                                              - propertyType
+                                              - bedrooms
+                                              - city
+                                              - budget
+                                              - location
+                        
+                                              Rules:
+                                              1. Extract only information explicitly mentioned.
+                                              2. If a field is not provided, return null.
+                                              3. Do not invent property details.
+                                              4. Convert budget to a numeric value.
+                                              5. Return data matching the requested Java type.
+                        """)
+                .user(message)
+                .call()
+                .entity(PropertySearchRequest.class);
+
+    }
+
 }
