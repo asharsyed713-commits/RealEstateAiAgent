@@ -2,6 +2,8 @@ package com.realestate.ai.controller;
 
 import com.realestate.ai.config.AiConfig;
 import com.realestate.ai.dto.PropertySearchRequest;
+import com.realestate.ai.model.Property;
+import com.realestate.ai.service.PropertySearchService;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -20,10 +23,13 @@ import java.util.Map;
 public class AiTestController {
 
     private final ChatClient chatClient;
+    private final PropertySearchService propertySearchService;
 
-    public AiTestController(ChatClient.Builder chatClient) {
+    public AiTestController( ChatClient.Builder chatClient, PropertySearchService propertySearchService) {
         this.chatClient = chatClient.build();
+        this.propertySearchService = propertySearchService;
     }
+
 
     @GetMapping("/test")
     public String testConnection(@RequestParam String message) {
@@ -108,7 +114,35 @@ public class AiTestController {
                 .user(message)
                 .call()
                 .entity(PropertySearchRequest.class);
+    }
 
+    @GetMapping("/search")
+    public List<Property> searchProperties(@RequestParam String message){
+
+        PropertySearchRequest request = chatClient.prompt()
+                .system("""
+                        You are a real estate search assistant.
+                        
+                                            Extract property search details from the user's request.
+                        
+                                            Fields:
+                                            - propertyType
+                                            - bedrooms
+                                            - city
+                                            - budget
+                                            - location
+                        
+                                            Rules:
+                                            1. Extract only explicitly mentioned information.
+                                            2. Return null for missing fields.
+                                            3. Do not invent property details.
+                                            4. Convert budget into a numeric INR value.
+                                            5. Return data matching the requested Java type.
+                        """)
+                .user(message)
+                .call()
+                .entity(PropertySearchRequest.class);
+        return propertySearchService.searchProperties(request);
     }
 
 }

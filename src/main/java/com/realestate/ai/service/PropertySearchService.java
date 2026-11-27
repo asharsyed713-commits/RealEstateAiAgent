@@ -5,12 +5,13 @@ import com.realestate.ai.model.Property;
 import com.realestate.ai.model.PropertyData;
 import org.springframework.stereotype.Service;
 
+
 import java.util.List;
 
 @Service
 public class PropertySearchService {
 
-    private List<Property> searchProperties(
+    public List<Property> searchProperties(
             PropertySearchRequest request
     ){
         List<Property> properties = PropertyData.getProperties();
