@@ -3,16 +3,14 @@ package com.realestate.ai.controller;
 import com.realestate.ai.config.AiConfig;
 import com.realestate.ai.dto.PropertySearchRequest;
 import com.realestate.ai.model.Property;
+import com.realestate.ai.repository.PropertyRepository;
 import com.realestate.ai.service.PropertySearchService;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.template.st.StTemplateRenderer;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
@@ -24,10 +22,12 @@ public class AiTestController {
 
     private final ChatClient chatClient;
     private final PropertySearchService propertySearchService;
+    private final PropertyRepository propertyRepository;
 
-    public AiTestController( ChatClient.Builder chatClient, PropertySearchService propertySearchService) {
+    public AiTestController(ChatClient.Builder chatClient, PropertySearchService propertySearchService, PropertyRepository propertyRepository) {
         this.chatClient = chatClient.build();
         this.propertySearchService = propertySearchService;
+        this.propertyRepository = propertyRepository;
     }
 
 
@@ -143,6 +143,16 @@ public class AiTestController {
                 .call()
                 .entity(PropertySearchRequest.class);
         return propertySearchService.searchProperties(request);
+    }
+
+    @PostMapping("/properties")
+    public com.realestate.ai.entity.Property saveProperty(@RequestBody com.realestate.ai.entity.Property property){
+        return propertyRepository.save(property);
+    }
+
+    @GetMapping("/properties")
+    public List<com.realestate.ai.entity.Property> getAllProperties(){
+        return propertyRepository.findAll();
     }
 
 }
